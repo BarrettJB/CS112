@@ -1,0 +1,19 @@
+18:01:08 **** Incremental Build of configuration Debug for project proj1 ****
+make all 
+Building file: ../main.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.cpp"
+../main.cpp: In function ‘int main()’:
+../main.cpp:46:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+../main.cpp:58:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+../main.cpp:70:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+Finished building: ../main.cpp
+ 
+Building target: proj1
+Invoking: GCC C++ Linker
+g++  -o "proj1"  ./CollectionTester.o ./Movie.o ./MovieCollection.o ./MovieTester.o ./main.o   
+Finished building target: proj1
+ 
+
+18:01:09 Build Finished (took 659ms)
+

@@ -1,0 +1,137 @@
+/* array.cpp defines "C style" array operations
+ * Student: Barrett Bryson
+ * Date: 2/23/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+#include "array.h"
+
+void initialize(double *a, int size) {
+	int val = 0;
+	for (int i = 0; i < size; i++) {
+		val = i+1;
+		a[i] = val;
+	}
+}
+
+void print(double *a, int size) {
+	for (int i = 0; i < size; i++) {
+		cout << *a << '\t';
+		a++;
+	}
+}		
+
+double average(double *a, int size) {
+	double sum = 0;
+	for (int i=0; i < size; i++) {
+		sum += *a;
+		a += 1;
+	}
+	return (sum/size);
+}
+
+double sum(double *a, int size) {
+	/* sum() returns the total of all values in an array
+	 *
+	 * @param: a, a double pointer, size, int containing length of the array
+	 * @return: sum, a double
+	 *
+	 * Precondition: a is not NULL
+	 */
+
+	double sum = 0;
+	for (int i=0; i < size; i++) {
+		sum += *a;
+		a += 1;
+	}
+	return sum;
+}
+
+void read(istream& in, double *a, int size) {
+	/* read() takes in values from an in stream and puts them into an array
+	 *
+	 * @param: in, an input stream, a, a double pointer,
+	 * size, int containing length of the array
+	 *
+	 * Precondition: a is not NULL
+	 * Postcondition: array at a will contain the values read in
+	 */
+
+	for (int i=0; i < size; i++) {
+		in >> *a;
+		a++;
+	}
+}
+
+void fill(const string& fileName, double *&a, int &numValues) {
+	/* fill takes in values from a .txt file and puts them into an array
+	 *
+	 * @param: fileName, a .txt containing an array, a, a double pointer,
+	 * numValues, int that will contain length of the array
+	 *
+	 * Precondition: a is not NULL, first number in .txt is the length
+	 * Postcondition: array at a will contain the values read in
+	 */
+
+	ifstream fin( fileName.c_str() );
+	assert( fin.is_open() );
+	fin >> numValues;
+	double * newA = new double [numValues];
+	for (int i=0; i < numValues; i++) {
+		fin >> *newA;
+		newA++;
+	}
+	delete [] a;
+	newA -= numValues;
+	a = newA;
+}
+
+void resize(double *&a, int oldSize, int newSize) {
+	/* resize() creates a new array of a different size
+	 *
+	 * @param: a, a double pointer, oldSize, an int containing size of old array,
+	 * newSize, an int containing the desired size
+	 *
+	 * Precondition: a is not NULL
+	 * Postcondition: any new positions will be filled with 0,
+	 * any extra positions will be deleted
+	 */
+	double * newA = new double [newSize];
+	if (newSize > oldSize) {
+		for (unsigned i = 0; i < oldSize; i++) {
+			*newA = *a;
+			newA++;
+			a++;
+		}
+		for (unsigned i = oldSize; i < newSize; i++){
+			*newA = 0;
+			newA++;
+		}
+	}
+	if (oldSize > newSize) {
+		for (unsigned i = 0; i < newSize; i++) {
+			*newA = *a;
+			newA++;
+			a++;
+		}
+	}
+	newA -= newSize;
+	a = newA;
+}
+
+void concat(double *a1, int size1, double *a2, int size2, double *&a3, int &size3) {
+	size3 = size1 + size2;
+	double * newA = new double [size3];
+	for (unsigned i = 0; i < size1; i++) {
+		*newA = *a1;
+		newA++;
+		a1++;
+	}
+	for (unsigned i = 0; i < size2; i++) {
+		*newA = *a2;
+		newA++;
+		a2++;
+	}
+	newA -= size3;
+	a3 = newA;
+}

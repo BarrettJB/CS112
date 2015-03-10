@@ -1,0 +1,102 @@
+/* array.cpp defines "C style" array operations
+ * Student: Barrett Bryson
+ * Date: 2/23/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+#include "array.h"
+
+void initialize(double *a, int size) {
+	int val = 0;
+	for (int i = 0; i < size; i++) {
+		val = i+1;
+		a[i] = val;
+	}
+}
+
+void print(double *a, int size) {
+	for (int i = 0; i < size; i++) {
+		cout << *a << '\t';
+		a++;
+	}
+}		
+
+double average(double *a, int size) {
+	double sum = 0;
+	for (int i=0; i < size; i++) {
+		sum += *a;
+		a += 1;
+	}
+	return (sum/size);
+}
+
+double sum(double *a, int size) {
+	double sum = 0;
+	for (int i=0; i < size; i++) {
+		sum += *a;
+		a += 1;
+	}
+	return sum;
+}
+
+void read(istream& in, double *a, int size) {
+	for (int i=0; i < size; i++) {
+		in >> *a;
+		a++;
+	}
+}
+
+void fill(const string& fileName, double *&a, int &numValues) {
+	ifstream fin( fileName.c_str() );
+	assert( fin.is_open() );
+	fin >> numValues;
+	double * newA = new double [numValues];
+	for (int i=0; i < numValues; i++) {
+		fin >> *newA;
+		newA++;
+	}
+	delete [] a;
+	newA -= numValues;
+	a = newA;
+}
+
+void resize(double *&a, int oldSize, int newSize) {
+	double * newA = new double [newSize];
+	if (newSize > oldSize) {
+		for (unsigned i = 0; i < oldSize; i++) {
+			*newA = *a;
+			newA++;
+			a++;
+		}
+		for (unsigned i = oldSize; i < newSize; i++){
+			*newA = 0;
+			newA++;
+		}
+	}
+	if (oldSize > newSize) {
+		for (unsigned i = 0; i < newSize; i++) {
+			*newA = *a;
+			newA++;
+			a++;
+		}
+	}
+	newA -= newSize;
+	a = newA;
+}
+
+void concat(double *a1, int size1, double *a2, int size2, double *&a3, int &size3) {
+	size3 = size1 + size2;
+	double * newA = new double [size3];
+	for (unsigned i = 0; i < size1; i++) {
+		*newA = *a1;
+		newA++;
+		a1++;
+	}
+	for (unsigned i = 0; i < size2; i++) {
+		*newA = *a2;
+		newA++;
+		a2++;
+	}
+	newA -= size3;
+	a3 = newA;
+}

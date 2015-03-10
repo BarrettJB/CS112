@@ -1,0 +1,31 @@
+/* tester.cpp drives the testing of our Vec template and Matrix class.
+ * Student:
+ * Date:
+ * Begun by: Joel C. Adams, for CS 112 at Calvin College.
+ */
+
+#include "VecTester.h"
+#include "MatrixTester.h"
+
+int main() {
+	//	VecTester vt;
+	//	vt.runTests();
+	cout << "Enter 1 to run tests, or 0 to continue: " << flush;
+	int answer;
+	cin >> answer;
+	if (answer == 1){
+		MatrixTester mt;
+		mt.runTests();
+	}
+	cout << '\n' << '\n' << '\n' << '\n' << '\n' << endl;
+	cout << "Welcome to the Matrix Application" << endl;
+	cout << "Operations:" << endl;
+	cout << " 1---Addition" << endl;
+	cout << " 2---Subtraction" << endl;
+	cout << " 3---Multiplication" << endl;
+	cout << " 4---Transpose" << endl;
+	cout << "Please select an operation: " << flush;
+	int response;
+	cin >> response;
+	if (response == 1)
+}

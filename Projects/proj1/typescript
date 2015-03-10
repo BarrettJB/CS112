@@ -1,0 +1,836 @@
+Script started on Mon 16 Feb 2015 10:24:13 PM EST
+]0;bb36@wall: ~/Desktop/Projectsbb36@wall:~/Desktop/Projects$ cd proj1
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ ls
+CollectionTester.cpp  [0m[01;34mDebug[0m     main.cpp              MovieCollection.cpp  Movie.cpp  MovieTester.cpp  movieTest.txt       writeTo.txt
+CollectionTester.h    lego.txt  MasterCollection.txt  MovieCollection.h    Movie.h    MovieTester.h    testCollection.txt
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ cat main.cpp
+/* main.cpp tests the classes in our project.
+ * Student Name: Barrett Bryson
+ * Date: 2/10/2015
+ */
+
+#include "MovieTester.h"
+#include "CollectionTester.h"
+#include "MovieCollection.h"
+#include <iostream>
+using namespace std;
+
+int main() {
+	MovieTester mt;
+	mt.runTests();
+	CollectionTester ct;
+	ct.runTests();
+	MovieCollection master("MasterCollection.txt");
+	string blanklines;
+	cout << endl << endl << endl << endl << endl;
+	cout << "Welcome to the Movie Collection Manager!" << endl <<
+			"Scroll up to examine function tests" << endl << endl;
+	bool quit = false;
+	while (!quit) {
+		cout << "Options:" << endl;
+		cout << "	1 - to search the collection for movies by a given director" << endl;
+		cout << "	2 - to search the collection for movies made in a given year" << endl;
+		cout << "	3 - to search the collection for movies with a given phrase in their title" << endl;
+		cout << "	4 - to add a new movie to the collection" << endl;
+		cout << "	5 - to remove a movie from the collection" << endl;
+		cout << "	0 - to quit" << endl;
+		cout << "------> " << flush;
+		string input;
+		cin >> input;
+		cin.clear();
+
+		if (input == "1") {
+			string fname;
+			string lname;
+			cout << "Director First Name: " << flush;
+			cin >> fname;
+			cout << "Director Last Name: " << flush;
+			cin >> lname;
+			vector<Movie> outputMovies;
+			outputMovies = master.searchByDirector(fname+" "+lname);
+			cout << "Movies by " << fname << " " << lname <<": " << endl << endl;
+			for (int i = 0; i < outputMovies.size(); i++ ) {
+				cout << outputMovies[i].getTitle() << endl << outputMovies[i].getYear() << endl << endl;
+			}
+		}
+
+		if (input == "2") {
+			int year;
+			cout << "Year: " << flush;
+			cin >> year;
+			vector<Movie> outputMovies;
+			outputMovies = master.searchByYear(year);
+			cout << "Movies made in " << year << ": " << endl << endl;
+			for (int i = 0; i < outputMovies.size(); i++ ) {
+				cout << outputMovies[i].getTitle() << endl << outputMovies[i].getDirector() << endl << endl;
+			}
+		}
+
+		if (input == "3") {
+			string phrase;
+			cout << "Phrase: " << flush;
+			cin >> phrase;
+			vector<Movie> outputMovies;
+			outputMovies = master.searchByTitlePhrase(phrase);
+			cout << "Movies made with phrase " << phrase << " in their title: " << endl << endl;
+			for (int i = 0; i < outputMovies.size(); i++ ) {
+				cout << outputMovies[i].getTitle() << endl << outputMovies[i].getDirector() << endl << outputMovies[i].getYear() << endl << endl;
+			}
+		}
+
+		if (input == "4") {
+			string file;
+			cout << "Name of Movie File: " << flush;
+			cin >> file;
+			ifstream fin(file.c_str());
+			if (fin.is_open()) {
+				Movie newMovie;
+				newMovie.readFrom(fin);
+				master.add(newMovie);
+				master.save();
+				fin.close();
+				cout << newMovie.getTitle() << endl;
+				cout << "succesfully added!" << endl << endl;
+			}
+			else {
+				cout << endl << "File not Found" << endl << endl;
+			}
+		}
+
+		if (input == "5") {
+			string file;
+			cout << "Name of Movie File: " << flush;
+			cin >> file;
+			ifstream fin(file.c_str());
+			if (fin.is_open()) {
+				Movie newMovie;
+				newMovie.readFrom(fin);
+				master.remove(newMovie);
+				master.save();
+				fin.close();
+				cout << newMovie.getTitle() << endl;
+				cout << "succesfully removed!" << endl << endl;
+			}
+			else {
+				cout << endl << "File not Found" << endl << endl;
+			}
+		}
+
+		if (input == "0") {
+			quit = true;
+		}
+	}
+}
+
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ cat Movie.h
+/* Movie.h
+ * Student Name: Barrett Bryson
+ * Date: 2/10/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+#ifndef PROJ1_MOVIE_H_
+#define PROJ1_MOVIE_H_
+
+#include <string>
+#include <fstream>
+using namespace std;
+
+class Movie {
+public:
+	Movie();
+	Movie(const string& title, int year, const string& director);
+	string getTitle() const;
+	int    getYear() const;
+	string getDirector() const;
+	void readFrom(istream& in);
+	void writeTo(ostream& out) const;
+	bool operator==(const Movie movie2);
+private:
+	string myTitle;
+	int    myYear;
+	string myDirector;
+};
+
+#endif /*PROJ1_MOVIE_H_*/
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ cat Mi[Kovie.cpp
+/* Movie.cpp
+ * Student Name: Barrett Bryson
+ * Date: 2/10/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+ #include "Movie.h"
+
+Movie::Movie() {
+	myTitle = "";
+	myYear = 0;
+	myDirector = "";
+}
+
+Movie::Movie(const string& title, int year, const string& director) {
+	myTitle = title;
+	myYear = year;
+	myDirector = director;
+}
+
+string Movie::getTitle() const {
+	return myTitle;
+}
+
+int Movie::getYear() const {
+	return myYear;
+}
+
+string Movie::getDirector() const {
+	return myDirector;
+}
+
+void Movie::readFrom(istream& in) {
+	getline(in, myTitle);
+	in >> myYear;
+	string newLine; getline(in, newLine);
+	getline(in, myDirector);
+}
+
+void Movie::writeTo(ostream& out) const {
+	out << myTitle << '\n'
+	    << myYear  << '\n'
+	    << myDirector << '\n';
+}
+
+bool Movie::operator==(const Movie movie2){
+	/*
+	 * operator== compares two movies to see if they are the exact same
+	 *
+	 * @param:movie2, Another Movie object
+	 * @return: a bool, true if movies are the same, false otherwise.
+	 */
+	if (myTitle == movie2.getTitle()){
+		if (myYear == movie2.getYear()) {
+			if (myDirector == movie2.getDirector()){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ cat MovieTester.h
+/* MovieTester.h
+ * Student Name: Barrett Bryson
+ * Date: 2/10/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+#ifndef PROJ1_MOVIETESTER_H_
+#define PROJ1_MOVIETESTER_H_
+
+#include "Movie.h"
+#include <iostream>
+#include <cassert>
+#include <fstream>
+using namespace std;
+
+class MovieTester {
+public:
+   void runTests() const;
+   void testDefaultConstructor() const;
+   void testExplicitConstructor() const;
+   void testReadFrom() const;
+   void testWriteTo() const;
+   void testEquals() const;
+};
+
+#endif /*PROJ1_MOVIETESTER_H_*/
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ cat m[KMovieTester.cpp
+/* MovieTester.cpp
+ * Student Name: Barrett Bryson
+ * Date: 2/10/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+
+#include "MovieTester.h"
+
+void MovieTester::runTests() const{
+   cout << "Testing Movie class..." << endl;
+   testDefaultConstructor();
+   testExplicitConstructor();
+   testReadFrom();
+   testWriteTo();
+   testEquals();
+   cout << "All tests passed!" << endl;
+}
+
+void MovieTester::testDefaultConstructor() const {
+    cout << "- Default Constructor ... " << flush;
+    Movie m;
+    assert( m.getTitle() == "" );
+    assert( m.getYear() == 0 );
+    assert( m.getDirector() == "" );
+    cout << " Passed!" << endl;
+}
+
+void MovieTester::testExplicitConstructor() const {
+    cout << "- Explicit Constructor... " << flush;
+    Movie m("Bambi", 1942, "David Hand");
+    assert( m.getTitle() == "Bambi" );
+    assert( m.getYear() == 1942 );
+    assert( m.getDirector() == "David Hand" );
+    cout << "Passed!" << endl;
+}
+
+void MovieTester::testReadFrom() const {
+	cout << "- readFrom()... " << flush;
+	ifstream fin("movieTest.txt");
+	assert( fin.is_open() );
+	Movie m;
+	m.readFrom(fin);
+	assert( m.getTitle() == "Gone with the Wind" );
+	assert( m.getYear() == 1939 );
+	assert( m.getDirector() == "Victor Fleming" );
+	string blankLine;
+	getline(fin, blankLine);
+	m.readFrom(fin);
+	assert( m.getTitle() == "Star Wars" );
+	assert( m.getYear() == 1977 );
+	assert( m.getDirector() == "George Lucas" );
+	cout << "Passed!" << endl;
+}
+
+void MovieTester::testWriteTo() const {
+   cout << "- writeTo()... " << flush;
+   // declare a Movie with known values
+   Movie m1("Raiders of the Lost Ark", 1981, "Steven Spielberg");
+   // write it to a file
+   ofstream fout("writeTo.txt");
+   m1.writeTo(fout);
+   fout.close();
+   // now open the same file for reading
+   ifstream fin("writeTo.txt");
+   assert( fin.is_open() );
+   // now read the Movie back from the file
+   Movie m2;
+   m2.readFrom(fin);
+   // and check that we got the same values we wrote
+   assert( m2.getTitle() == "Raiders of the Lost Ark" );
+   assert( m2.getYear() == 1981 );
+   assert( m2.getDirector() == "Steven Spielberg" );
+   fin.close();
+   cout << " 1 " << flush;
+   // two movies
+   Movie m3("Blade Runner", 1982, "Ridley Scott");
+   fout.open("writeTo.txt");
+   m1.writeTo(fout);                          // write 1st movie
+   fout << "\n";                              // write a blank line
+   m3.writeTo(fout);                          // write 2nd movie
+   fout.close();
+   fin.open("writeTo.txt");
+   Movie m4, m5;
+   m4.readFrom(fin);                          // read 1st movie
+   string blankline; getline(fin, blankline); // eat the blank line
+   m5.readFrom(fin);                          // read 2nd movie
+   fin.close();
+   assert( m4.getTitle() == "Raiders of the Lost Ark" );
+   assert( m4.getYear() == 1981 );
+   assert( m4.getDirector() == "Steven Spielberg" );
+   assert( m5.getTitle() == "Blade Runner" );
+   assert( m5.getYear() == 1982 );
+   assert( m5.getDirector() == "Ridley Scott" );
+   cout << " 2 " << flush;
+   cout << "Passed!" << endl;
+}
+
+void MovieTester::testEquals() const {
+	cout << "- == ... " << flush;
+	// Create Test Movies
+	Movie m1("Raiders of the Lost Ark", 1981, "Steven Spielberg");
+	Movie m2("Raiders of the Lost Ark", 1981, "Steven Spielberg");
+	Movie m3("The Lego Movie",2014,"Phil Lord");
+	Movie m4("Raiders of the Lost Ark", 1981, "Stephen Speelburg");
+	Movie m5("Raiders of the Lost Ark", 1984, "Steven Spielberg");
+	Movie m6("Traitors of the Last Lark", 1981, "Stephen Speelburg");
+	assert( m1 == m2);
+	cout << " 1 " << flush;
+	assert( !(m1 == m3));
+	cout << " 2 " << flush;
+	assert( !(m1 == m4));
+	cout << " 3 " << flush;
+	assert( !(m1 == m5));
+	cout << " 4 " << flush;
+	assert( !(m1 == m6));
+	cout << " 5 " << flush;
+	cout << "Passed!" << endl;
+}
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ cat Mv[Koiv[K[KvieCollection.h
+/* MovieCollection.h
+ * Student Name: Barrett Bryson
+ * Date: 2/10/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+#ifndef PROJ1_MOVIECOLLECTION_H_
+#define PROJ1_MOVIECOLLECTION_H_
+
+#include <string>
+#include "Movie.h"
+#include <vector>
+#include <cassert>
+using namespace std;
+
+class MovieCollection {
+public:
+	MovieCollection(const string& fileName);
+	vector<Movie> searchByDirector(const string& directorName) const;
+	vector<Movie> searchByYear(const int& year) const;
+	vector<Movie> searchByTitlePhrase(const string& phrase) const;
+	void add(const Movie& newMovie);
+	void remove(const Movie newMovie);
+	void save() const;
+private:
+	vector<Movie> myMovies;
+	string myFile;
+};
+
+#endif /*PROJ1_MOVIECOLLECTION_H_*/
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ cat MovieCollet[Kction.cpp
+/* MovieCollection.cpp
+ * Student Name: Barrett Bryson
+ * Date: 2/10/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+#include "MovieCollection.h"
+#include <fstream>
+using namespace std;
+
+MovieCollection::MovieCollection(const string& fileName) {
+	ifstream fin( fileName.c_str() );
+	assert( fin.is_open() );
+
+	myFile = fileName;
+	Movie aMovie;
+	while (true) {
+		aMovie.readFrom(fin);
+		if ( !fin ) break;
+		string blankLine;
+		getline(fin, blankLine);
+		myMovies.push_back(aMovie);
+	}
+	fin.close();
+}
+
+vector<Movie> MovieCollection::searchByDirector(const string& directorName) const {
+	vector<Movie> v;
+	for (unsigned i = 0; i < myMovies.size(); i++) {
+		if ( myMovies[i].getDirector().find(directorName) != string::npos ) {
+			v.push_back( myMovies[i] );
+		}
+	}
+	return v;
+}
+
+vector<Movie> MovieCollection::searchByYear(const int& year) const {
+	/*
+	 * searchByYear() searches a MovieCollection for all Movies that were made within given year
+	 *
+	 * @param: integer year, The year that is desired for the search
+	 * @return: a vector of Movies, all movies in the collection made in the given year
+	 */
+	vector<Movie> output;
+	for (unsigned i = 0; i < myMovies.size(); i++) {
+		if ( myMovies[i].getYear() == year) {
+			output.push_back( myMovies[i] );
+		}
+	}
+	return output;
+}
+
+vector<Movie> MovieCollection::searchByTitlePhrase(const string& phrase) const {
+	/*
+	 * searchByTitlePhrase() searches a MovieCollection for all Movies whose titles contain
+	 * the given phrase
+	 * @param: string phrase, The phrase that is desired for the search
+	 * @return: a vector of Movies, all movies in the collection with titles containing
+	 * the given phrase
+	 */
+	vector<Movie> v;
+	for (unsigned i = 0; i < myMovies.size(); i++) {
+		if ( myMovies[i].getTitle().find(phrase) != string::npos ) {
+			v.push_back( myMovies[i] );
+		}
+	}
+	return v;
+}
+
+
+void MovieCollection::add(const Movie& newMovie) {
+	/*
+	 * add() adds a movie to the MovieCollection
+	 * postcondition: myMovies.size() == N &&
+	 *                myMovies contains the newMovie.
+	 * @param: Movie newMovie, the Movie that you want to add
+	 */
+	myMovies.push_back(newMovie);
+}
+
+void MovieCollection::remove(Movie newMovie) {
+	/*
+	 * remove() removes a movie to the MovieCollection
+	 * postcondition: myMovies.size() == N --
+	 *                myMovies no longer contains the newMovie.
+	 * @param: Movie newMovie, the Movie that you want to remove
+	 */
+	for (unsigned i = 0; i < myMovies.size(); i++) {
+		Movie test = myMovies[i];
+		if (newMovie == test) {
+			myMovies.erase(myMovies.begin()+i);
+		}
+	}
+}
+
+void MovieCollection::save() const {
+	/*
+	 * save() Rewrites the original .txt file with the new data for the collection.
+	 * postcondition: myFile.txt contains the new data
+	 */
+	ofstream fout(myFile.c_str());
+	for (unsigned i = 0; i < myMovies.size(); i++) {
+		Movie amovie = myMovies[i];
+		amovie.writeTo(fout);
+		fout << "\n";
+	}
+	fout.close();
+}
+
+
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ Cat[K[K[Kcat CollectionTestr[Ker.h
+/* CollectionTester.h tests the MovieCollection class.
+ * Student Name: Barrett Bryson
+ * Date: 2/10/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+#ifndef COLLECTIONTESTER_
+#define COLLECTIONTESTER_
+
+#include <iostream>
+#include "MovieCollection.h"
+using namespace std;
+
+class CollectionTester {
+public:
+    void runTests() const;
+    void testConstructor() const;
+    void testSearchByYear() const;
+    void testAddRemove() const;
+    void testSearchByPhrase() const;
+    void testSave() const;
+
+};
+
+#endif /*COLLECTIONTESTER_*/
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ cat collect[K[K[K[K[K[KC[K[KCollet[Kctui[K[KionTester.cpp
+/* CollectionTester.cpp defines the MovieCollection test-methods.
+ * Student Name: Barrett Bryson
+ * Date: 2/10/2015
+ * Begun by: Joel Adams, for CS 112 at Calvin College.
+ */
+
+#include "CollectionTester.h"
+
+void CollectionTester::runTests() const {
+   cout << "Testing class MovieCollection..." << endl;
+   testConstructor();
+   testSearchByYear();
+   testSearchByPhrase();
+   testAddRemove();
+   testSave();
+   cout << "All tests passed!" << endl;
+}
+
+void CollectionTester::testConstructor() const {
+    cout << "- Constructor..." << flush;
+    MovieCollection mc("testCollection.txt");
+    // case of 1 movie
+    vector<Movie> v1 = mc.searchByDirector("Hand");
+    assert( v1.size() == 1 );
+    assert( v1[0].getTitle() == "Bambi" );
+    cout << " 1 " << flush;
+    // case of 2 movies
+    vector<Movie> v2 = mc.searchByDirector("Spielberg");
+    assert( v2.size() == 2 );
+    assert( v2[0].getTitle() == "Jaws" );
+    assert( v2[1].getTitle() == "Raiders of the Lost Ark" );
+    cout << " 2 " << flush;
+    // case of no movies
+    vector<Movie> v3 = mc.searchByDirector("Hitchcock");
+    assert( v3.size() == 0 );
+    cout << " 3 " << flush;
+    cout << " Passed!" << endl;
+}
+
+void CollectionTester::testSearchByYear() const{
+	cout << "- searchByYear()..." << flush;
+	MovieCollection mc("testCollection.txt");
+	//Test case with one movie
+	vector<Movie> y1981 = mc.searchByYear(1981);
+	assert( y1981.size() == 1);
+	assert( y1981[0].getTitle() == "Raiders of the Lost Ark");
+	cout << " 1 " << flush;
+	//Test case with two movies
+	vector<Movie> y1939 = mc.searchByYear(1939);
+	assert( y1939.size() == 2);
+	assert( y1939[0].getTitle() == "Gone with the Wind");
+	assert( y1939[1].getTitle() == "The Wizard of Oz");
+	cout << " 2 " << flush;
+	//Test case with no movies
+	vector<Movie> y1919 = mc.searchByYear(1919);
+	assert( y1919.size() == 0);
+	cout << " 3 " << flush;
+	cout << " Passed!" << endl;
+}
+
+void CollectionTester::testSearchByPhrase() const {
+	cout << "- searchByTitlePhrase()..." << flush;
+	MovieCollection mc("testCollection.txt");
+	//Test with 1 return
+	vector<Movie> v1 = mc.searchByTitlePhrase("Ark");
+	assert(v1[0].getTitle() == "Raiders of the Lost Ark");
+	cout << " 1 " << flush;
+	//Test with multiple returns
+	vector<Movie> v2 = mc.searchByTitlePhrase("Wi");
+	assert(v2.size() == 2);
+	assert(v2[0].getTitle() == "Gone with the Wind");
+	assert(v2[1].getTitle() == "The Wizard of Oz");
+	cout << " 2 " << flush;
+	//Test with no returns
+	vector<Movie> v3 = mc.searchByTitlePhrase("Lego");
+	assert(v3.size() == 0);
+	cout << " 3 " << flush;
+	cout << " Passed!" << endl;
+}
+
+
+void CollectionTester::testAddRemove() const {
+	cout << "- add()/remove()... " << flush;
+	MovieCollection mc("testCollection.txt");
+	Movie m1("The Lego Movie",2014,"Phil Lord");
+	//Test add
+	mc.add(m1);
+	vector<Movie> v1 = mc.searchByDirector("Phil Lord");
+	assert(v1.size() == 1);
+	cout << " 1 " << flush;
+
+	//Test remove
+	mc.remove(m1);
+	vector<Movie> v2 = mc.searchByDirector("Phil Lord");
+	assert(v2.size() == 0);
+
+	cout << " Passed!" << endl;
+}
+
+void CollectionTester::testSave() const {
+	cout << "- save()..." << flush;
+	MovieCollection mc1("testCollection.txt");
+	Movie m1("The Lego Movie",2014,"Phil Lord");
+	mc1.add(m1);
+	mc1.save();
+	MovieCollection mc2("testCollection.txt");
+	vector<Movie> mv = mc2.searchByTitlePhrase("Lego");
+	assert(mv.size() == 1);
+	cout << " 1 " << flush;
+	mc2.remove(m1);
+	mc2.save();
+	cout << " 2 " << flush;
+	cout << " Passed!" << endl;
+}
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ cd Debug
+]0;bb36@wall: ~/Desktop/Projects/proj1/Debugbb36@wall:~/Desktop/Projects/proj1/Debug$ ls
+CollectionTester.d  main.d  makefile           MovieCollection.o  Movie.o        MovieTester.o  [0m[01;32mproj1[0m       subdir.mk
+CollectionTester.o  main.o  MovieCollection.d  Movie.d            MovieTester.d  objects.mk     sources.mk
+]0;bb36@wall: ~/Desktop/Projects/proj1/Debugbb36@wall:~/Desktop/Projects/proj1/Debug$ make all
+make: Nothing to be done for `all'.
+]0;bb36@wall: ~/Desktop/Projects/proj1/Debugbb36@wall:~/Desktop/Projects/proj1/Debug$ cd ..
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ ./Debug/proj1
+Testing Movie class...
+- Default Constructor ...  Passed!
+- Explicit Constructor... Passed!
+- readFrom()... Passed!
+- writeTo()...  1  2 Passed!
+- == ...  1  2  3  4  5 Passed!
+All tests passed!
+Testing class MovieCollection...
+- Constructor... 1  2  3  Passed!
+- searchByYear()... 1  2  3  Passed!
+- searchByTitlePhrase()... 1  2  3  Passed!
+- add()/remove()...  1  Passed!
+- save()... 1  2  Passed!
+All tests passed!
+
+
+
+
+
+Welcome to the Movie Collection Manager!
+Scroll up to examine function tests
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 1
+Director First Name: George  
+Director Last Name: Lucas
+Movies by George Lucas: 
+
+Star Wars
+1977
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 1
+Director First Name: Victor Fleming        
+Director Last Name: Fleming
+Movies by Victor Fleming: 
+
+Gone with the Wind
+1939
+
+The Wizard of Oz
+1939
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 2
+Year: 1981
+Movies made in 1981: 
+
+Raiders of the Lost Ark
+Steven Spielberg
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 2
+Year: 1939
+Movies made in 1939: 
+
+Gone with the Wind
+Victor Fleming
+
+The Wizard of Oz
+Victor Fleming
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 3
+Phrase: Jaw   Bambi
+Movies made with phrase Bambi in their title: 
+
+Bambi
+David Hand
+1942
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 3
+Phrase: of
+Movies made with phrase of in their title: 
+
+The Wizard of Oz
+Victor Fleming
+1939
+
+Raiders of the Lost Ark
+Steven Spielberg
+1981
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 4
+Name of Movie File: legot .txt
+The Lego Movie
+succesfully added!
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 3
+Phrase: Lego
+Movies made with phrase Lego in their title: 
+
+The Lego Movie
+Phil Lord
+2014
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 5
+Name of Movie File: lego.txt
+The Lego Movie
+succesfully removed!
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 3
+Phrase: Lego
+Movies made with phrase Lego in their title: 
+
+Options:
+	1 - to search the collection for movies by a given director
+	2 - to search the collection for movies made in a given year
+	3 - to search the collection for movies with a given phrase in their title
+	4 - to add a new movie to the collection
+	5 - to remove a movie from the collection
+	0 - to quit
+------> 0
+]0;bb36@wall: ~/Desktop/Projects/proj1bb36@wall:~/Desktop/Projects/proj1$ exit
+
+Script done on Mon 16 Feb 2015 10:28:54 PM EST
