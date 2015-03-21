@@ -54,6 +54,15 @@ void List::append(Item it) {
 	mySize++;
 }
 
+void List::prepend(Item it) {
+	Node * nodePtr = new Node(it,myFirst);
+	if(mySize == 0 || myFirst == NULL) {
+		myLast = nodePtr;
+	}
+	myFirst = nodePtr;
+	mySize++;
+}
+
 List& List::operator=(const List& original) {
 	if (this != &original) {
 		myFirst = myLast = NULL;
@@ -97,6 +106,47 @@ void List::readFrom(istream& in) {
 	while (in != NULL) {
 		this->append(input);
 		in >> input;
+	}
+}
+
+void List::writeTo(string fileName) const {
+	ofstream fout(fileName.c_str());
+	Node * nodePtr = myFirst;
+	while (nodePtr != NULL) {
+		fout << nodePtr->myItem << " ";
+		nodePtr = nodePtr->myNext;
+	}
+
+}
+
+int List::search(Item it) const {
+	Node * nodePtr = myFirst;
+	for (unsigned i = 0; i < mySize; i++) {
+		if (nodePtr->myItem == it) {
+			return i;
+		}
+		nodePtr = nodePtr->myNext;
+	}
+	return -1;
+}
+
+void List::insert(Item it, unsigned index) {
+	Node * nodePtr = myFirst;
+	if (index == 0) {
+		this->prepend(it);
+	}
+	else {
+		if ( index == mySize) {
+			this->append(it);
+		}
+		else {
+			for (unsigned i = 1; i < index; i++) {
+				nodePtr = nodePtr->myNext;
+			}
+			Node * insert = new Node(it,nodePtr->myNext);
+			nodePtr->myNext = insert;
+			mySize++;
+		}
 	}
 }
 

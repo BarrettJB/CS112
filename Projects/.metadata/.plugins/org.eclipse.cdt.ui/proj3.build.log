@@ -1,12 +1,15 @@
-10:36:24 **** Auto Build of configuration Debug for project proj3 ****
+10:28:41 **** Build of configuration Debug for project proj3 ****
 make all 
 Building file: ../VecTester.cpp
 Invoking: GCC C++ Compiler
 g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"VecTester.d" -MT"VecTester.d" -o "VecTester.o" "../VecTester.cpp"
 In file included from ../VecTester.cpp:7:0:
 ../VecTester.h:11:17: fatal error: Vec.h: No such file or directory
+subdir.mk:21: recipe for target 'VecTester.o' failed
+ #include "Vec.h"
+                 ^
 compilation terminated.
 make: *** [VecTester.o] Error 1
 
-10:36:24 Build Finished (took 116ms)
+10:28:51 Build Finished (took 9s.737ms)
 

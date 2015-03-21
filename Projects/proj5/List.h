@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 
@@ -24,9 +25,13 @@ public:
 	Item getFirst() const;
 	Item getLast() const;
 	void append(Item it);
+	void prepend(Item it);
 	List& operator=(const List& original);
 	bool operator==(const List& l2) const;
 	void readFrom(istream& in);
+	void writeTo(string fileName) const;
+	int search(Item it) const;
+	void insert(Item it, unsigned index);
 private:
 	struct Node {
 		Item myItem;

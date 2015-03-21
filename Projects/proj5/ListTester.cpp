@@ -21,7 +21,12 @@ void ListTester::runTests() {
 	testCopyConstructor();
 	testAssignment();
 	testEquality();
-	testReadFrom();
+	testReadFromStream();
+	testWriteToFile();
+	testPrepend();
+	testSearch();
+	testInsertion();
+	testDeletion();
 	cout << "All tests passed!" << endl;
 }
 
@@ -288,7 +293,7 @@ void ListTester::testEquality() {
 	cout << "Passed!" << endl;
 }
 
-void ListTester::testReadFrom() {
+void ListTester::testReadFromStream() {
 	cout << "Testing readFrom(stream)... " << flush;
 	ifstream fin("listTest1.txt");
 	assert(fin.is_open());
@@ -298,9 +303,92 @@ void ListTester::testReadFrom() {
 	for (unsigned i = 1; i < 6; i++) {
 		l2.append(i*11);				//Creating List to test against
 	}
-//	cout << l1.getSize() << " " << l1.getLast() << flush;
+	//	cout << l1.getSize() << " " << l1.getLast() << flush;
 	assert(l1.getSize() == 5);
 	assert(l1 == l2);
 	cout << "Passed!" << endl;
 }
 
+void ListTester::testWriteToFile() {
+	cout << "Testing writeTo(string)... " << flush;
+	List list1;
+	list1.append(11);
+	list1.append(22);
+	list1.append(33);
+	list1.writeTo("writeTest.txt");
+	cout << "Passed! (Currently Requires manual inspection)" << endl;
+}
+
+void ListTester::testPrepend() {
+	cout << "Testing prepend()... " << flush;
+	List list1;
+	list1.append(11);
+	list1.append(22);
+	list1.append(33);
+	list1.prepend(-1);
+	assert(list1.getSize() == 4);
+	assert(list1.getFirst() == -1);
+	assert(list1.myFirst->myNext->myItem == 11);
+	cout << "Passed!" << endl;
+}
+
+void ListTester::testSearch() {
+	cout << "Testing search()... " << flush;
+	List list1;
+	list1.append(11);
+	list1.append(22);
+	list1.append(33);
+	assert(list1.search(11) == 0);
+	cout <<	" 1 " << flush;
+	assert(list1.search(22) == 1);
+	cout << " 2 " << flush;
+	assert(list1.search(33) == 2);
+	cout << " 3 " << flush;
+	assert(list1.search(44) == -1);
+	cout << " 4 " << flush;
+	cout << "Passed!" << endl;
+}
+
+void ListTester::testInsertion() {
+	cout << "Testing insert()... " << flush;
+	List list1;
+	list1.append(11);
+	list1.append(22);
+	list1.append(33);
+	list1.insert(1,0);
+	assert(list1.getSize() == 4);
+	assert(list1.getFirst() == 1);
+	cout << " 1 " << flush;
+	list1.insert(2,2);
+	assert(list1.getSize() == 5);
+	assert(list1.search(2) == 2);
+	cout << " 2 " << flush;
+	list1.insert(3,5);
+	assert(list1.getSize() == 6);
+	assert(list1.getLast() == 3);
+	cout << " 3 " << flush;
+	// TODO add invalid index exception
+	cout << "Passed!" << endl;
+}
+
+void ListTester::testDeletion() {
+	cout << "Testing delete()... " << flush;
+	List list1;
+	list1.append(11);
+	list1.append(22);
+	list1.append(33);
+	list1.append(44);
+	list1.append(55);
+	list1.
+	list1.remove(0);
+	assert(list1.getSize() == 3);
+	assert(list1.search(11) == -1);
+	assert(list1.getFirst() == 22);
+	cout << " 2 " << flush;
+	list1.remove(3);
+	assert(list1.getSize() == 2);
+	assert(list1.search(55) == -1);
+	assert(list1.getLast() == 44);
+	cout << " 3 " << flush;
+	cout << "Passed!" << endl;
+}

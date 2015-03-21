@@ -16,7 +16,12 @@ public:
 	void testCopyConstructor();
 	void testAssignment();
 	void testEquality();
-	void testReadFrom();
+	void testReadFromStream();
+	void testWriteToFile();
+	void testPrepend();
+	void testSearch();
+	void testInsertion();
+	void testDeletion();
 };
 
 #endif /*LISTTESTER_H_*/
